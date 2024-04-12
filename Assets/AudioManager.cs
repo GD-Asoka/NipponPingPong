@@ -5,7 +5,14 @@ using UnityEngine;
 public class AudioManager : MonoBehaviour
 {
     public AudioClip bgm1, bgm2, bgm3;
+    public AudioClip ripple;
     public AudioSource audioSource;
+    public static AudioManager instance;
+
+    private void Awake()
+    {
+        instance = this;
+    }
 
     private void Start() {
         audioSource = GetComponent<AudioSource>();
@@ -20,7 +27,7 @@ public class AudioManager : MonoBehaviour
             audioSource.clip = bgm1;
             audioSource.Play();
         }
-        if(rand < 0.66)
+        else if(rand < 0.66)
         {
             audioSource.clip = bgm2;
             audioSource.Play();
@@ -30,5 +37,10 @@ public class AudioManager : MonoBehaviour
             audioSource.clip = bgm3;
             audioSource.Play();
         }
+    }
+
+    public void Ripple()
+    {
+        audioSource.PlayOneShot(ripple);
     }
 }

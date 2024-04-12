@@ -12,7 +12,7 @@ public class Controller : MonoBehaviour
     public float vfxTime = 0.2f;
     public GameObject rippleVFX, collisionVFX, redVFX, ball;
 
-    public bool vfxPlaying = false, redPlaying = false;
+    public bool vfxPlaying = false, redPlaying = false, ripplePlaying = false;
 
     public static Controller instance;
     public TextMeshProUGUI scoreText;
@@ -22,7 +22,12 @@ public class Controller : MonoBehaviour
 
     private void Awake() 
     {
-        instance = this;
+        instance = this; 
+        if(!PlayerPrefs.HasKey("HighScore"))
+        {
+            PlayerPrefs.SetInt("HighScore", 0);
+            PlayerPrefs.Save();
+        }
     }
 
     // Start is called before the first frame update
@@ -71,6 +76,7 @@ public class Controller : MonoBehaviour
         #region Input Logic
         if(Input.GetMouseButton(0))
         {
+            StartCoroutine(RippleSound());
             StartCoroutine(PlayEffect(rippleVFX));
         }
         if(Input.GetMouseButtonDown(1))
@@ -115,13 +121,27 @@ public class Controller : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D other) 
     {
-        if(other.collider.CompareTag("Ball"))    
+        if(other.collider.CompareTag("Ball"))
         {
+            StartCoroutine(RippleSound());
+            StartCoroutine(PlayEffect(rippleVFX));
             StartCoroutine(PlayEffect(collisionVFX));
         }
-        if(other.collider.CompareTag("Wall"))    
+        if(other.collider.CompareTag("Wall"))
         {
+            StartCoroutine(RippleSound());
             StartCoroutine(PlayEffect(collisionVFX, true));
+        }
+    }
+
+    private IEnumerator RippleSound()
+    {
+        if(!ripplePlaying)
+        {
+            ripplePlaying = true;
+            AudioManager.instance.Ripple();
+            yield return new WaitForSeconds(1);
+            ripplePlaying = false;
         }
     }
 }
